@@ -181,7 +181,6 @@ export default function Post({
           onFocus={() => handleFocus(index)}
           onBlur={handleBlur}
           tabIndex={0}
-          //className={focusedCardIndex === index ? "Mui-focused" : ""}
         >
           {article.title}
           <NavigateNextRoundedIcon

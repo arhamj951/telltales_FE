@@ -13,6 +13,10 @@ interface ForgotPasswordProps {
   handleClose: () => void;
 }
 
+//show in token expired
+// show if it is reset or not
+// if sucess-> take to sign in
+
 export default function ForgotPassword({
   open,
   handleClose,
@@ -21,17 +25,16 @@ export default function ForgotPassword({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    event.stopPropagation();
     try {
-      // Send the email to the backend for the reset process
       const response = await apiRequest("post", "/forgot-password", {
         email,
       });
-      alert(response.data.message); // You can display a success message based on backend response
-      handleClose(); // Close the dialog after success
+      alert(response.data);
+      handleClose();
     } catch (error: any) {
       console.error("Failed to send reset email:", error);
-      alert("Failed to send reset email, please try again.");
+      alert(`Failed to send reset email, error: ${error.response.data}`);
     }
   };
 

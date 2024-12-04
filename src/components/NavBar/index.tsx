@@ -23,7 +23,7 @@ import { Search, SearchIconWrapper, StyledInputBase } from "./styledComponents";
 import { apiRequest } from "../../services/apiClient";
 
 type ChildComponentProps = {
-  setSearchTerm: Dispatch<SetStateAction<string>>; // Define the type for the setCount prop
+  setSearchTerm: Dispatch<SetStateAction<string>>;
 };
 
 export default function PrimarySearchAppBar({

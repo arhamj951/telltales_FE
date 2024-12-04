@@ -3,9 +3,9 @@ import { styled } from "@mui/material/styles";
 export const BlogStyledComponent = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  minHeight: "100vh", // Set minHeight to fill the viewport
+  minHeight: "100vh",
   padding: theme.spacing(2),
-  paddingBottom: theme.spacing(8), // Ensure space for footer at the bottom
+  paddingBottom: theme.spacing(8),
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4),
   },

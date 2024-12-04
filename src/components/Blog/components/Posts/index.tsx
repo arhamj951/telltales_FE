@@ -5,6 +5,7 @@ import Post from "./components/Post";
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../../../services/apiClient";
 import { Article } from "../../../../types/types";
+import { Grid2 } from "@mui/material";
 
 export default function Posts(props: {
   searchTerm: string;
@@ -64,7 +65,7 @@ export default function Posts(props: {
       <Grid container spacing={8} columns={12} sx={{ my: 4 }}>
         {props.searchTerm === "" ? (
           articleInfo.length === 0 ? (
-            <div>no post has been created yes</div>
+            <Grid2 container>no post has been created yet</Grid2>
           ) : (
             articleInfo.map((article, index) => (
               <Grid key={index} item xs={12} sm={6}>

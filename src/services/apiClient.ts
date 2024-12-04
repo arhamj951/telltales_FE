@@ -30,6 +30,6 @@ export const apiRequest = async (
     });
     return response;
   } catch (error) {
-    throw error; // Allow the caller to handle errors
+    throw error;
   }
 };

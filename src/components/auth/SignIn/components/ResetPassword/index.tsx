@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import {
-  Button,
-  OutlinedInput,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import { apiRequest } from "../../../../../services/apiClient";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
 
 interface ResetPasswordProps {
   token: string;
@@ -50,24 +52,28 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
       <DialogTitle>Reset Password</DialogTitle>
       <DialogContent>
         <form onSubmit={handleResetPassword}>
-          <OutlinedInput
-            required
-            margin="dense"
-            fullWidth
-            type="password"
-            label="New Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <OutlinedInput
-            required
-            margin="dense"
-            fullWidth
-            type="password"
-            label="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          <Box my={4}>
+            <TextField
+              required
+              fullWidth
+              type="password"
+              label="New Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              variant="outlined"
+            />
+          </Box>
+          <Box my={2}>
+            <TextField
+              required
+              fullWidth
+              type="password"
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              variant="outlined"
+            />
+          </Box>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <DialogActions>
             <Button type="submit" variant="contained" disabled={loading}>
