@@ -34,8 +34,6 @@ function Reactions() {
   );
 }
 
-// Styled Typography for title
-
 const demoTags = [
   "Technology",
   "Health",
@@ -45,7 +43,6 @@ const demoTags = [
   "Innovation",
 ];
 
-// Author component with slight adjustments to layout
 function Author({ authors }: { authors: { name: string; avatar: string }[] }) {
   return (
     <Box
@@ -87,7 +84,6 @@ function Author({ authors }: { authors: { name: string; avatar: string }[] }) {
   );
 }
 
-// Post component to display each individual post
 export default function Post({
   article,
   index,

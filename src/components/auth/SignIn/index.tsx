@@ -31,7 +31,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const navigate = useNavigate();
   const { login } = useUser();
 
-  // Form validation errors
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);

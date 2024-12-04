@@ -92,7 +92,7 @@ export default function AdminDashBoard(props: { searchTerm: string }) {
           sx={{
             display: "flex",
             flexDirection: "column",
-            flexGrow: 1, // Ensures the content fills available space
+            flexGrow: 1,
             gap: 4,
           }}
         >

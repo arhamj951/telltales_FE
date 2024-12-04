@@ -56,9 +56,7 @@ export default function PrimarySearchAppBar({
       return;
     }
 
-    const endpoint = user.admin
-      ? "/alerts" // Admin gets all notifications
-      : `/alerts/${user._id}/alerts`; // User-specific notifications
+    const endpoint = user.admin ? "/alerts" : `/alerts/${user._id}/alerts`;
 
     try {
       const response = await apiRequest("get", endpoint);

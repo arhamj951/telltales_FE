@@ -49,7 +49,6 @@ const PostForm: React.FC<PostFormProps> = ({
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState(postData);
-  // const [articles, setArticles] = useState(articleInfo);
   const { user } = useUser();
 
   const [error, setError] = useState({
@@ -96,7 +95,6 @@ const PostForm: React.FC<PostFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate form
     const newError = {
       title: formData.title.trim() === "",
       description: formData.description.trim() === "",
@@ -105,7 +103,6 @@ const PostForm: React.FC<PostFormProps> = ({
 
     setError(newError);
 
-    // If there's any error, don't submit the form
     if (Object.values(newError).includes(true)) {
       return;
     }
@@ -123,7 +120,6 @@ const PostForm: React.FC<PostFormProps> = ({
       alert("failed. Please try again.");
       console.error("Error", error);
     }
-    // setArticles((prevArticles) => [...prevArticles, formData]);
 
     if (onSubmit) {
       onSubmit(formData);

@@ -1,5 +1,3 @@
-// src/components/auth/ResetPassword.tsx
-
 import React, { useState } from "react";
 import {
   Button,
@@ -12,7 +10,7 @@ import {
 import { apiRequest } from "../../../../../services/apiClient";
 
 interface ResetPasswordProps {
-  token: string; // The reset token received by email
+  token: string;
 }
 
 const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
@@ -40,7 +38,6 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
         password,
       });
       console.log(response.data.message);
-      // Redirect or show a success message
     } catch (error: any) {
       setError("Failed to reset password.");
     } finally {
