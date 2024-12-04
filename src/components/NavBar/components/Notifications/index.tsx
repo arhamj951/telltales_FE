@@ -23,19 +23,33 @@ interface NotificationsProps {
 
 export default function Notifications({ alerts }: NotificationsProps) {
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
-      {alerts.map((alert) => (
-        <ListItem
-          key={alert._id}
-          secondaryAction={
-            <IconButton aria-label="comment">
-              <CommentIcon />
-            </IconButton>
-          }
-        >
-          <ListItemText primary={alert.title} secondary={alert.description} />
-        </ListItem>
-      ))}
-    </List>
+    <Box
+      sx={{
+        width: "100%",
+      }}
+    >
+      <List
+        sx={{
+          width: "100%",
+          maxWidth: 360,
+          maxHeight: 500,
+          bgcolor: "background.paper",
+          overflow: "auto",
+        }}
+      >
+        {alerts.map((alert) => (
+          <ListItem
+            key={alert._id}
+            secondaryAction={
+              <IconButton aria-label="comment">
+                <CommentIcon />
+              </IconButton>
+            }
+          >
+            <ListItemText primary={alert.title} secondary={alert.description} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 }

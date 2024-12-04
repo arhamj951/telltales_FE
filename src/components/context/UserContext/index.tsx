@@ -5,19 +5,9 @@ import React, {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useEffect,
 } from "react";
-import { Navigate } from "react-router-dom";
-import { json } from "stream/consumers";
-
-interface User {
-  _id?: string;
-  name?: string;
-  email?: string;
-  password?: string;
-  avatar?: string;
-  admin?: string;
-  isAuthenticated: boolean;
-}
+import { User } from "../../../types/types";
 
 interface UserContextType {
   user: User;
@@ -30,31 +20,69 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>({ isAuthenticated: false });
+  const [user, setUser] = useState<User>({
+    _id: "",
+    name: "",
+    email: "",
+    password: "",
+    avatar: "",
+    admin: "",
+    isAuthenticated: false,
+  });
 
-  if (user.isAuthenticated === false) {
-    const storedUser1 = localStorage.getItem("user");
-
-    if (storedUser1) {
-      const storedUser: User = JSON.parse(storedUser1);
-      setUser(storedUser);
-      console.log(user);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-  }
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "logout-event") {
+        setUser({ isAuthenticated: false });
+      }
+
+      if (event.key === "signin-event") {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const login = async (user: User) => {
-    setUser(user);
     localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+    localStorage.setItem("signin-event", Date.now().toString());
   };
 
   const signUp = async (user: User) => {
-    setUser(user);
     localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+    localStorage.setItem("signin-event", Date.now().toString());
   };
 
   const logout = () => {
-    setUser({ isAuthenticated: false });
+    setUser({
+      _id: "",
+      name: "",
+      email: "",
+      password: "",
+      avatar: "",
+      admin: "",
+      isAuthenticated: false,
+    });
+
     localStorage.removeItem("user");
+    localStorage.setItem("logout-event", Date.now().toString());
+    localStorage.removeItem("signin-event");
+    localStorage.removeItem("logout-event");
   };
 
   return (

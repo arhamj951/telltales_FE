@@ -1,34 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, colors } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import Pagination from "@mui/material";
-import { Styled } from "styled-components";
 import Post from "../Blog/components/Posts/components/Post";
 import Typography from "@mui/material/Typography";
-import {
-  Container,
-  CssBaseline,
-  styled,
-  ThemeProvider,
-  Button,
-} from "@mui/material";
+import { Container, CssBaseline, ThemeProvider } from "@mui/material";
 import { darkTheme } from "../../Theme/theme";
-import { BlogStyledComponent } from "../Blog";
-// import articleInfo from "../../dummyData/articleInfo";
-import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { apiRequest } from "../../services/apiClient";
+import { Article } from "../../types/types";
+import { BlogStyledComponent } from "../Blog/styledComponents";
 
-type Author = {
-  name: string;
-  avatar: string;
+const articleStatus = (articleApproval: string | undefined): string => {
+  return articleApproval === "approve"
+    ? "Approved Post"
+    : articleApproval === "disapprove"
+    ? "Disapproved Post"
+    : "Waiting for approval";
 };
 
-type Article = {
-  tag: string;
-  title: string;
-  description: string;
-  Approval?: string;
-  authors: Author[];
+const articleStatusColor = (
+  articleApproval: string | undefined
+): "default" | "success" | "error" | "warning" => {
+  return articleApproval === "approve"
+    ? "success"
+    : articleApproval === "disapprove"
+    ? "error"
+    : "warning";
 };
 
 export default function MyPosts(props: { searchTerm: string }) {
@@ -37,6 +34,7 @@ export default function MyPosts(props: { searchTerm: string }) {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState<number | null>(
     null
   );
+  const [refresher, setRefresher] = useState<boolean>(false);
   const { user } = useUser();
 
   useEffect(() => {
@@ -44,15 +42,12 @@ export default function MyPosts(props: { searchTerm: string }) {
       setArticleInfo(posts);
       console.log("nash", articleInfo);
     });
-  }, []);
+  }, [refresher]);
 
   const getMyPosts = async () => {
     let response: any;
     try {
-      response = await axios.get(
-        `http://localhost:5000/api/posts/user/${user._id}`,
-        {}
-      );
+      response = await apiRequest("get", `/posts/user/${user._id}`, {});
     } catch (error) {
       console.error("Error during fetching posts for approval", error);
     }
@@ -113,6 +108,7 @@ export default function MyPosts(props: { searchTerm: string }) {
                       handleBlur={handleBlur}
                       focusedCardIndex={focusedCardIndex}
                       ifMyPosts={ifMyPosts}
+                      setRefresher={setRefresher}
                     />
                     <Box
                       sx={{
@@ -128,10 +124,10 @@ export default function MyPosts(props: { searchTerm: string }) {
                             gutterBottom
                             sx={{ fontWeight: 600 }}
                           >
-                            {article.Approval}
+                            {articleStatus(article.Approval)}
                           </Typography>
                         }
-                        color="primary"
+                        color={articleStatusColor(article.Approval)}
                         sx={{ borderRadius: 4 }}
                       />
                     </Box>
@@ -147,6 +143,7 @@ export default function MyPosts(props: { searchTerm: string }) {
                       handleBlur={handleBlur}
                       focusedCardIndex={focusedCardIndex}
                       ifMyPosts={ifMyPosts}
+                      setRefresher={setRefresher}
                     />
                     <Box
                       sx={{
@@ -155,13 +152,19 @@ export default function MyPosts(props: { searchTerm: string }) {
                         mt: 2,
                       }}
                     >
-                      <Typography
-                        variant="caption"
-                        gutterBottom
-                        sx={{ fontWeight: 600 }}
-                      >
-                        {article.Approval}
-                      </Typography>
+                      <Chip
+                        label={
+                          <Typography
+                            variant="caption"
+                            gutterBottom
+                            sx={{ fontWeight: 600 }}
+                          >
+                            {articleStatus(article.Approval)}
+                          </Typography>
+                        }
+                        color={articleStatusColor(article.Approval)}
+                        sx={{ borderRadius: 4 }}
+                      />
                     </Box>
                   </Grid>
                 ))

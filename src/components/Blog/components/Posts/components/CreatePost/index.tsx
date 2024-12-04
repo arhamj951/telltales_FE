@@ -10,11 +10,10 @@ import {
   MenuItem,
   FormHelperText,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import articleInfo from "../../../../../../dummyData/articleInfo";
 import { useUser } from "../../../../../context/UserContext";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../../../../../../services/apiClient";
+import { BlogStyledComponent, StyledBox } from "./styledComponents";
 
 const defaultPostData = {
   title: "",
@@ -41,24 +40,6 @@ const demoTags = [
   "Lifestyle",
   "Entertainment",
 ];
-
-const BlogStyledComponent = styled("div")(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  minHeight: "100vh", // Set minHeight to fill the viewport
-  padding: theme.spacing(2),
-  paddingBottom: theme.spacing(8), // Ensure space for footer at the bottom
-  [theme.breakpoints.up("sm")]: {
-    padding: theme.spacing(4),
-  },
-  "&::before": {
-    content: '""',
-    display: "block",
-    position: "absolute",
-    zIndex: -1,
-    inset: 0,
-  },
-}));
 
 const PostForm: React.FC<PostFormProps> = ({
   isEditMode,
@@ -115,7 +96,6 @@ const PostForm: React.FC<PostFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(e);
     // Validate form
     const newError = {
       title: formData.title.trim() === "",
@@ -130,15 +110,12 @@ const PostForm: React.FC<PostFormProps> = ({
       return;
     }
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/posts/createpost",
-        {
-          title: formData.title,
-          description: formData.description,
-          tag: formData.tag,
-          creator: user._id,
-        }
-      );
+      const response = await apiRequest("post", "/posts/createpost", {
+        title: formData.title,
+        description: formData.description,
+        tag: formData.tag,
+        creator: user._id,
+      });
 
       navigate("/blog");
       alert("Post created successfully!");
@@ -157,22 +134,7 @@ const PostForm: React.FC<PostFormProps> = ({
 
   return (
     <BlogStyledComponent>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          padding: 2,
-          borderRadius: 2,
-          backgroundColor: "background.paper",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease",
-          "&:hover": {
-            transform: "translateY(-5px)",
-            boxShadow: "0 6px 15px rgba(0,0,0,0.2)",
-          },
-        }}
-      >
+      <StyledBox>
         <Typography variant="h5" gutterBottom>
           {isEditMode ? "Edit Post" : "Create New Post"}
         </Typography>
@@ -244,7 +206,7 @@ const PostForm: React.FC<PostFormProps> = ({
             </Button>
           </Box>
         </form>
-      </Box>
+      </StyledBox>
     </BlogStyledComponent>
   );
 };

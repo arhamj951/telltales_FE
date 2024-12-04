@@ -1,71 +1,26 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Dispatch, SetStateAction } from "react";
-import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { Popper, Fade, Paper } from "@mui/material";
-import Select from "@mui/material";
 import Notifications, { Alert } from "./components/Notifications";
-import AdminDashBoard from "../AdminDashBoard";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
+import { Search, SearchIconWrapper, StyledInputBase } from "./styledComponents";
+import { apiRequest } from "../../services/apiClient";
 
 type ChildComponentProps = {
   setSearchTerm: Dispatch<SetStateAction<string>>; // Define the type for the setCount prop
@@ -96,14 +51,17 @@ export default function PrimarySearchAppBar({
   };
 
   const getNotifications = async () => {
-    if (!user) return;
+    if (!user || !user.isAuthenticated) {
+      setAlerts([]);
+      return;
+    }
 
     const endpoint = user.admin
-      ? "http://localhost:5000/api/alerts" // Admin gets all notifications
-      : `http://localhost:5000/api/alerts/${user._id}/alerts`; // User-specific notifications
+      ? "/alerts" // Admin gets all notifications
+      : `/alerts/${user._id}/alerts`; // User-specific notifications
 
     try {
-      const response = await axios.get(endpoint);
+      const response = await apiRequest("get", endpoint);
       setAlerts(response.data.alerts);
     } catch (error) {
       console.error("Error fetching notifications", error);
@@ -112,7 +70,7 @@ export default function PrimarySearchAppBar({
 
   const handleLogout = () => {
     logout();
-    navigate("/sign-in");
+    navigate("/blog");
   };
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -303,44 +261,6 @@ export default function PrimarySearchAppBar({
                 </Fade>
               )}
             </Popper>
-            {/* <Modal
-              open={}
-              onClose={handleModalClose}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-start",
-                mt: 8, // Adjust this margin to position it near the navbar
-              }}
-            >
-            </Modal> */}
-
-            {/* <Dialog open={openModal}>
-              <DialogTitle>Notifications</DialogTitle>
-              <DialogContent>
-                <Notifications />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleModalClose} color="primary">
-                  close
-                </Button>
-                <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
-              </DialogActions>
-            </Dialog> */}
-
-            {/* <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton> */}
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton

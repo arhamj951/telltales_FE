@@ -19,7 +19,10 @@ import {
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import { styled } from "@mui/material/styles";
 import { ThumbUp } from "@mui/icons-material";
+import { useUser } from "../../../../../context/UserContext";
 import axios from "axios";
+import { apiRequest } from "../../../../../../services/apiClient";
+import { TitleTypography } from "./styledComponents";
 
 function Reactions() {
   return (
@@ -32,44 +35,7 @@ function Reactions() {
 }
 
 // Styled Typography for title
-const TitleTypography = styled(Typography)(({ theme }) => ({
-  position: "relative",
-  textDecoration: "none",
-  fontWeight: 500,
-  fontSize: "1.25rem",
-  "&:hover": { cursor: "pointer", color: theme.palette.primary.main },
-  "& .arrow": {
-    visibility: "hidden",
-    position: "absolute",
-    right: 0,
-    top: "50%",
-    transform: "translateY(-50%)",
-  },
-  "&:hover .arrow": {
-    visibility: "visible",
-    opacity: 0.7,
-  },
-  "&:focus-visible": {
-    outline: "3px solid",
-    outlineColor: "hsla(210, 98%, 48%, 0.5)",
-    outlineOffset: "3px",
-    borderRadius: "8px",
-  },
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    width: 0,
-    height: "1px",
-    bottom: 0,
-    left: 0,
-    backgroundColor: `hsla(220, 30%, 10%, 0.8)`,
-    opacity: 0.3,
-    transition: "width 0.3s ease, opacity 0.3s ease",
-  },
-  "&:hover::before": {
-    width: "100%",
-  },
-}));
+
 const demoTags = [
   "Technology",
   "Health",
@@ -129,9 +95,12 @@ export default function Post({
   handleBlur,
   focusedCardIndex,
   ifMyPosts,
+  setRefresher,
 }: any) {
+  let refresh: boolean = true;
   const [openModal, setOpenModal] = useState(false);
   const [editedArticle, setEditedArticle] = useState(article);
+  const { user } = useUser();
 
   const handleModalOpen = () => {
     setOpenModal(true);
@@ -154,32 +123,32 @@ export default function Post({
 
   const handleSave = async () => {
     let response: any;
+    let pid = article._id;
+    let uid = user._id;
     try {
-      response = await axios.patch(
-        `http://localhost:5000/api/posts/update/${article._id}`,
-        {
-          title: editedArticle.title,
-          description: editedArticle.description,
-          tag: editedArticle.tag,
-        }
-      );
+      response = await apiRequest("patch", `/posts/update/${pid}/${uid}`, {
+        title: editedArticle.title,
+        description: editedArticle.description,
+        tag: editedArticle.tag,
+      });
     } catch (error) {
       console.error("Error during updating the post", error);
     }
     console.log("Saved edited article:", editedArticle);
     handleModalClose();
+    setRefresher((prev: boolean) => !prev);
   };
 
   const handleDeletePost = async () => {
     let response: any;
+    let pid = article._id;
+    let uid = user._id;
     try {
-      response = await axios.delete(
-        `http://localhost:5000/api/posts/delete/${article._id}`,
-        {}
-      );
+      response = await apiRequest("delete", `/posts/delete/${pid}/${uid}`, {});
     } catch (error) {
       console.error("Error during updating the post", error);
     }
+    setRefresher((prev: boolean) => !prev);
   };
 
   return (
@@ -216,7 +185,7 @@ export default function Post({
           onFocus={() => handleFocus(index)}
           onBlur={handleBlur}
           tabIndex={0}
-          className={focusedCardIndex === index ? "Mui-focused" : ""}
+          //className={focusedCardIndex === index ? "Mui-focused" : ""}
         >
           {article.title}
           <NavigateNextRoundedIcon

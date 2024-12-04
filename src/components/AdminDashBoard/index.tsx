@@ -1,72 +1,55 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import Pagination from "@mui/material";
-import { Styled } from "styled-components";
 import Post from "../Blog/components/Posts/components/Post";
 import Typography from "@mui/material/Typography";
-import {
-  Container,
-  CssBaseline,
-  styled,
-  ThemeProvider,
-  Button,
-} from "@mui/material";
+import { Container, CssBaseline, ThemeProvider, Button } from "@mui/material";
 import { darkTheme } from "../../Theme/theme";
-import { BlogStyledComponent } from "../Blog";
-// import articleInfo from "../../dummyData/articleInfo";
-import axios from "axios";
-
-type Author = {
-  name: string;
-  avatar: string;
-};
-
-type Article = {
-  _id: string;
-  tag: string;
-  title: string;
-  description: string;
-  authors: Author[];
-};
+import { useUser } from "../context/UserContext";
+import { apiRequest } from "../../services/apiClient";
+import { BlogStyledComponent } from "../Blog/styledComponents";
+import { Article } from "../../types/types";
 
 export default function AdminDashBoard(props: { searchTerm: string }) {
-  const [ifMyPosts, setIfMyPosts] = useState<boolean>(false);
   const [articleInfo, setArticleInfo] = useState<Article[]>([]);
   const [focusedCardIndex, setFocusedCardIndex] = React.useState<number | null>(
     null
   );
 
+  const { user } = useUser();
+
   useEffect(() => {
     getPostsForApproval().then((posts: Article[]) => {
       setArticleInfo(posts);
-      console.log("nash", articleInfo);
     });
   }, []);
 
   const getPostsForApproval = async () => {
-    let response: any;
+    const uid = user._id;
     try {
-      response = await axios.get(
-        "http://localhost:5000/api/posts/adminposts",
-        {}
-      );
+      const response = await apiRequest("get", `/posts/adminposts/${uid}`, {});
+      return response.data.posts;
+    } catch (error) {
+      console.error("Error during fetching posts for approval:", error);
+      return null;
+    }
+  };
+  const updatePostApproval = async (pid: string, approval: string) => {
+    let response: any;
+    const uid = user._id;
+    try {
+      response = await apiRequest("patch", `/posts/adminposts/${pid}/${uid}`, {
+        Approval: approval,
+      });
     } catch (error) {
       console.error("Error during fetching posts for approval", error);
     }
-
-    if (!response) {
-      return;
-    }
-    return response.data.posts;
   };
 
   const approve = (article: any) => {
     updatePostApproval(article._id, "approve").then(() => {
-      console.log(article._id);
       getPostsForApproval().then((posts: Article[]) => {
         setArticleInfo(posts);
-        console.log("approve", articleInfo);
       });
     });
   };
@@ -75,21 +58,8 @@ export default function AdminDashBoard(props: { searchTerm: string }) {
     updatePostApproval(article._id, "disapprove").then(() => {
       getPostsForApproval().then((posts: Article[]) => {
         setArticleInfo(posts);
-        console.log("disapprove", articleInfo);
       });
     });
-  };
-
-  const updatePostApproval = async (pid: string, approval: string) => {
-    let response: any;
-    try {
-      response = await axios.patch(
-        `http://localhost:5000/api/posts/adminposts/${pid}`,
-        { Approval: approval }
-      );
-    } catch (error) {
-      console.error("Error during fetching posts for approval", error);
-    }
   };
 
   const handleFocus = (index: number) => {

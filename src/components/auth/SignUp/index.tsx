@@ -1,6 +1,5 @@
 import React from "react";
-import MuiCard from "@mui/material/Card";
-import { styled, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import {
   Box,
   Button,
@@ -11,71 +10,19 @@ import {
   FormControlLabel,
   FormLabel,
   Link,
-  Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { darkTheme } from "../../../Theme/theme";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import FormGroup from "@mui/material";
-
-interface User {
-  _id?: string;
-  name?: string;
-  email?: string;
-  password?: string;
-  avatar?: string;
-  admin?: string;
-  isAuthenticated: boolean;
-}
-
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignSelf: "center",
-  width: "100%",
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: "auto",
-  [theme.breakpoints.up("sm")]: {
-    maxWidth: "450px",
-  },
-  boxShadow:
-    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
-  ...theme.applyStyles("dark", {
-    boxShadow:
-      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
-  }),
-}));
-
-export const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: "calc((1 - var(--template-frame-height, 0)) * 100dvh)",
-  minHeight: "100%",
-  padding: theme.spacing(2),
-  [theme.breakpoints.up("sm")]: {
-    padding: theme.spacing(4),
-  },
-  "&::before": {
-    content: '""',
-    display: "block",
-    position: "absolute",
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
-    backgroundRepeat: "no-repeat",
-    ...theme.applyStyles("dark", {
-      backgroundImage:
-        "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
-    }),
-  },
-}));
+import { apiRequest } from "../../../services/apiClient";
+import { User } from "../../../types/types";
+import { AuthContainer, Card } from "../styledComponents";
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
   let navigate = useNavigate();
-  const { signUp, setUser } = useUser();
+  const { signUp } = useUser();
   const [checked, setChecked] = React.useState(false);
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
@@ -86,7 +33,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-    console.log(event.target.checked);
   };
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -135,15 +81,12 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       .value;
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/users/signup/",
-        {
-          name: name,
-          email: email,
-          password: password,
-          admin: checked,
-        }
-      );
+      const response = await apiRequest("post", "/users/signup/", {
+        name: name,
+        email: email,
+        password: password,
+        admin: checked,
+      });
 
       let recieveddUser: User = {
         _id: response.data.user._id,
@@ -159,6 +102,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       navigate("/blog");
       alert("Signed up successfully!");
     } catch (error) {
+      console.log(error);
       alert("Sign up failed. Please try again.");
       console.error("Error during sign-up:", error);
     }
@@ -167,7 +111,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline enableColorScheme />
-      <SignUpContainer direction="column" justifyContent="space-between">
+      <AuthContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <Typography
             component="h1"
@@ -205,9 +149,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
               <TextField
                 required
                 fullWidth
+                name="email"
                 id="email"
                 placeholder="your@email.com"
-                name="email"
                 autoComplete="email"
                 error={emailError}
                 helperText={emailErrorMessage}
@@ -260,7 +204,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             </Typography>
           </Box>
         </Card>
-      </SignUpContainer>
+      </AuthContainer>
     </ThemeProvider>
   );
 }
