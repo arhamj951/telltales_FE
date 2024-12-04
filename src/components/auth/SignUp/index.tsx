@@ -101,9 +101,11 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       await signUp(recieveddUser);
       navigate("/blog");
       alert("Signed up successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
-      alert("Sign up failed. Please try again.");
+      const errorMessage =
+        error.response?.data?.message || "An unknown error occurred.";
+      alert(`Sign up failed: ${errorMessage}`);
       console.error("Error during sign-up:", error);
     }
   };

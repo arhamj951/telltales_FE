@@ -4,12 +4,11 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import { apiRequest } from "../../../../../services/apiClient";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import { AxiosError } from "axios";
 
 interface ResetPasswordProps {
   token: string;
@@ -20,6 +19,8 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = React.useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
 
   const handleResetPassword = async (
     event: React.FormEvent<HTMLFormElement>
@@ -31,19 +32,31 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
       return;
     }
 
-    setLoading(true);
-    setError("");
+    if (!password || password.length < 6) {
+      setPasswordError(true);
+      setPasswordErrorMessage("Password must be at least 6 characters long.");
+    } else {
+      setPasswordError(false);
+      setPasswordErrorMessage("");
 
-    try {
-      const response = await apiRequest("post", "/users/reset-password", {
-        token,
-        password,
-      });
-      console.log(response.data.message);
-    } catch (error: any) {
-      setError("Failed to reset password.");
-    } finally {
-      setLoading(false);
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await apiRequest("post", "/users/reset-password", {
+          token,
+          password,
+        });
+        alert(response.data.message);
+      } catch (error: any) {
+        const statusCode = error.response?.status;
+        const errorMessage =
+          error.response?.data?.message || "An unknown error occurred.";
+        console.log("Error", statusCode, errorMessage);
+        setError(`Failed to reset password: ${errorMessage}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -59,6 +72,8 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
               type="password"
               label="New Password"
               value={password}
+              error={passwordError}
+              helperText={passwordErrorMessage}
               onChange={(e) => setPassword(e.target.value)}
               variant="outlined"
             />
