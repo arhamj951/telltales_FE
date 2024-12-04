@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useParams,
 } from "react-router-dom";
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
@@ -14,6 +15,7 @@ import NavBar from "./components/NavBar";
 import AdminDashBoard from "./components/AdminDashBoard";
 import MyPosts from "./components/MyPosts";
 import { useUser } from "./components/context/UserContext";
+import ResetPassword from "./components/auth/SignIn/components/ResetPassword";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -72,10 +74,19 @@ function App() {
             user.isAuthenticated ? <CreatePost /> : <Navigate to="/blog" />
           }
         />
+        <Route
+          path="/reset-password/:token"
+          element={<ResetPasswordWrapper />}
+        />
         <Route path="*" element={<Navigate to="/blog" />} />
       </Routes>
     </Router>
   );
 }
+
+const ResetPasswordWrapper = () => {
+  const { token } = useParams<{ token: string }>();
+  return token ? <ResetPassword token={token} /> : <Navigate to="/blog" />;
+};
 
 export default App;

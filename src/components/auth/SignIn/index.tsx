@@ -10,6 +10,7 @@ import {
   FormLabel,
   Link,
   Typography,
+  Snackbar,
 } from "@mui/material";
 import { darkTheme } from "../../../Theme/theme";
 import { useUser } from "../../context/UserContext";
@@ -29,11 +30,19 @@ import ForgotPassword from "./components/ForgotPassword";
 export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const navigate = useNavigate();
   const { login } = useUser();
+
+  // Form validation errors
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+
   const [open, setOpen] = React.useState(false);
+
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState("");
+
+  const [rememberMe, setRememberMe] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -42,6 +51,8 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -80,25 +91,36 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
     try {
       const response = await apiRequest("post", "/users/login/", {
-        email: email,
-        password: password,
+        email,
+        password,
       });
 
-      let recieveddUser: User = {
+      const receivedUser: User = {
         _id: response.data.user._id,
         name: response.data.user.name,
         email: response.data.user.email,
-        password: response.data.user.password,
+        password: "",
         avatar: response.data.user.image,
         admin: response.data.user.admin,
         isAuthenticated: true,
       };
 
-      await login(recieveddUser);
+      await login(receivedUser);
+
+      if (rememberMe) {
+        localStorage.setItem("user", JSON.stringify(receivedUser));
+      }
+
       navigate("/blog");
-      alert("Sign in successful!");
-    } catch (error) {
-      alert("Sign in failed. Please try again.");
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        setSnackbarMessage(
+          "Invalid credentials. Please check your email and password."
+        );
+      } else {
+        setSnackbarMessage("Sign in failed. Please try again later.");
+      }
+      setSnackbarOpen(true);
       console.error("Error during sign-in:", error);
     }
   };
@@ -153,16 +175,18 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
               />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  value="remember"
+                  color="primary"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                />
+              }
               label="Remember me"
             />
             <ForgotPassword open={open} handleClose={handleClose} />
-            <AnimatedButton
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
+            <AnimatedButton type="submit" fullWidth variant="contained">
               Sign In
             </AnimatedButton>
             <Link
@@ -175,7 +199,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
               Forgot your password?
             </Link>
             <AnimatedButton
-              type="submit"
+              type="button"
               fullWidth
               variant="contained"
               onClick={() => navigate("/blog")}
@@ -193,6 +217,12 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             </Typography>
           </Box>
         </Card>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          message={snackbarMessage}
+        />
       </AuthContainer>
     </ThemeProvider>
   );

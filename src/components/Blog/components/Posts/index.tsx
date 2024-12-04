@@ -17,7 +17,7 @@ export default function Posts(props: {
 
   useEffect(() => {
     getPosts().then((posts: Article[]) => {
-      setArticleInfo(posts);
+      if (posts) setArticleInfo(posts);
     });
   }, []);
   const handleFocus = (index: number) => {
@@ -42,16 +42,19 @@ export default function Posts(props: {
     return response.data.posts;
   };
 
-  const searchedPosts: Article[] = articleInfo.filter((article) => {
-    return (
-      article.title
-        .toLocaleLowerCase()
-        .includes(props.searchTerm.toLowerCase()) ||
-      article.tag
-        .toLocaleLowerCase()
-        .includes(props.searchTerm.toLocaleLowerCase())
-    );
-  });
+  let searchedPosts: Article[] = [];
+  if (articleInfo && articleInfo.length !== 0) {
+    searchedPosts = articleInfo.filter((article) => {
+      return (
+        article.title
+          .toLocaleLowerCase()
+          .includes(props.searchTerm.toLowerCase()) ||
+        article.tag
+          .toLocaleLowerCase()
+          .includes(props.searchTerm.toLocaleLowerCase())
+      );
+    });
+  }
 
   return (
     <div>
@@ -60,18 +63,22 @@ export default function Posts(props: {
       </Typography>
       <Grid container spacing={8} columns={12} sx={{ my: 4 }}>
         {props.searchTerm === "" ? (
-          articleInfo.map((article, index) => (
-            <Grid key={index} item xs={12} sm={6}>
-              <Post
-                article={article}
-                index={index}
-                handleFocus={handleFocus}
-                handleBlur={handleBlur}
-                focusedCardIndex={focusedCardIndex}
-                ifMyPosts={props.ifMyPosts}
-              />
-            </Grid>
-          ))
+          articleInfo.length === 0 ? (
+            <div>no post has been created yes</div>
+          ) : (
+            articleInfo.map((article, index) => (
+              <Grid key={index} item xs={12} sm={6}>
+                <Post
+                  article={article}
+                  index={index}
+                  handleFocus={handleFocus}
+                  handleBlur={handleBlur}
+                  focusedCardIndex={focusedCardIndex}
+                  ifMyPosts={props.ifMyPosts}
+                />
+              </Grid>
+            ))
+          )
         ) : searchedPosts.length !== 0 ? (
           searchedPosts.map((article, index) => (
             <Grid key={index} item xs={12} sm={6}>
