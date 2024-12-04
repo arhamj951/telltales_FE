@@ -13,10 +13,6 @@ interface ForgotPasswordProps {
   handleClose: () => void;
 }
 
-//show in token expired
-// show if it is reset or not
-// if sucess-> take to sign in
-
 export default function ForgotPassword({
   open,
   handleClose,

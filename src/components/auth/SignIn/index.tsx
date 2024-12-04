@@ -49,6 +49,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
   const handleClose = () => {
     setOpen(false);
+    alert("refer to maildev running on port 1080");
   };
 
   const handleSnackbarClose = () => setSnackbarOpen(false);
@@ -173,17 +174,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                 fullWidth
               />
             </FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value="remember"
-                  color="primary"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                />
-              }
-              label="Remember me"
-            />
             <ForgotPassword open={open} handleClose={handleClose} />
             <AnimatedButton type="submit" fullWidth variant="contained">
               Sign In

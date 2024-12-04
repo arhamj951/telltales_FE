@@ -8,13 +8,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { apiRequest } from "../../../../../services/apiClient";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface ResetPasswordProps {
   token: string;
 }
 
 const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -48,6 +49,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
           password,
         });
         alert(response.data.message);
+        navigate("/sign-in");
       } catch (error: any) {
         const statusCode = error.response?.status;
         const errorMessage =
