@@ -7,20 +7,17 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { Popper, Fade, Paper } from "@mui/material";
-import Notifications, { Alert } from "./components/Notifications";
+import Notifications from "./components/Notifications";
 import { Link } from "react-router-dom";
 import { Search, SearchIconWrapper, StyledInputBase } from "./styledComponents";
 import { apiRequest } from "../../services/apiClient";
+import { Alert } from "../../types/types";
 
 type ChildComponentProps = {
   setSearchTerm: Dispatch<SetStateAction<string>>;
@@ -70,8 +67,8 @@ export default function PrimarySearchAppBar({
   }, [user]);
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box position="relative" sx={{ flexGrow: 1, zIndex: 1400 }}>
+      <AppBar position="sticky">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex" }}>
             <Typography
@@ -152,7 +149,10 @@ export default function PrimarySearchAppBar({
               color="inherit"
               onClick={handleNotificationClick}
             >
-              <Badge badgeContent={alerts.length} color="error">
+              <Badge
+                badgeContent={alerts.filter((alert) => !alert.read).length}
+                color="error"
+              >
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -166,7 +166,7 @@ export default function PrimarySearchAppBar({
               {({ TransitionProps }) => (
                 <Fade {...TransitionProps} timeout={350}>
                   <Paper>
-                    <Notifications alerts={alerts} />
+                    <Notifications alerts={alerts} setAlerts={setAlerts} />
                   </Paper>
                 </Fade>
               )}

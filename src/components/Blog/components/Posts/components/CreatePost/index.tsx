@@ -54,7 +54,6 @@ const PostForm: React.FC<PostFormProps> = ({
   const [error, setError] = useState({
     title: false,
     description: false,
-    tag: false,
   });
 
   useEffect(() => {
@@ -98,7 +97,6 @@ const PostForm: React.FC<PostFormProps> = ({
     const newError = {
       title: formData.title.trim() === "",
       description: formData.description.trim() === "",
-      tag: formData.tag === "",
     };
 
     setError(newError);
@@ -172,7 +170,7 @@ const PostForm: React.FC<PostFormProps> = ({
             }}
           />
 
-          <FormControl fullWidth margin="normal" error={error.tag}>
+          <FormControl fullWidth margin="normal">
             <InputLabel id="tag-label">Tag</InputLabel>
             <Select
               labelId="tag-label"
@@ -192,7 +190,7 @@ const PostForm: React.FC<PostFormProps> = ({
                 </MenuItem>
               ))}
             </Select>
-            {error.tag && <FormHelperText>Tag is required</FormHelperText>}
+            {/* {error.tag && <FormHelperText>Tag is required</FormHelperText>} */}
           </FormControl>
 
           {/* Submit Button */}

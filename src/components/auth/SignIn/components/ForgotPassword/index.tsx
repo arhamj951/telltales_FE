@@ -18,19 +18,38 @@ export default function ForgotPassword({
   handleClose,
 }: ForgotPasswordProps) {
   const [email, setEmail] = React.useState<string>("");
+  const [emailError, setEmailError] = React.useState<string>("");
+
+  const isValidEmail = (email: string): boolean => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (!isValidEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    setEmailError("");
+
     try {
       const response = await apiRequest("post", "/forgot-password", {
         email,
       });
-      alert(response.data);
+      alert(
+        response.data.message ||
+          "Password reset email sent successfully. refer to port 1080"
+      );
       handleClose();
     } catch (error: any) {
       console.error("Failed to send reset email:", error);
-      alert(`Failed to send reset email, error: ${error.response.data}`);
+      alert(
+        `Failed to send reset email. ${
+          error.response?.data || "Please try again later."
+        }`
+      );
     }
   };
 
@@ -44,7 +63,7 @@ export default function ForgotPassword({
         sx: { backgroundImage: "none" },
       }}
     >
-      <DialogTitle>Reset password</DialogTitle>
+      <DialogTitle>Reset Password</DialogTitle>
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
       >
@@ -60,11 +79,16 @@ export default function ForgotPassword({
           name="email"
           label="Email address"
           placeholder="Email address"
-          type="email"
           fullWidth
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          error={Boolean(emailError)}
         />
+        {emailError && (
+          <DialogContentText color="error" sx={{ mt: 0 }}>
+            {emailError}
+          </DialogContentText>
+        )}
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>
         <Button onClick={handleClose}>Cancel</Button>

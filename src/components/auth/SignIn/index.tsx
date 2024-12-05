@@ -49,7 +49,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
   const handleClose = () => {
     setOpen(false);
-    alert("refer to maildev running on port 1080");
   };
 
   const handleSnackbarClose = () => setSnackbarOpen(false);

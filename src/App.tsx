@@ -16,6 +16,7 @@ import AdminDashBoard from "./components/AdminDashBoard";
 import MyPosts from "./components/MyPosts";
 import { useUser } from "./components/context/UserContext";
 import ResetPassword from "./components/auth/SignIn/components/ResetPassword";
+import { Box } from "@mui/material";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -76,7 +77,18 @@ function App() {
         />
         <Route
           path="/reset-password/:token"
-          element={<ResetPasswordWrapper />}
+          element={
+            user.isAuthenticated ? (
+              <Navigate to="/blog" />
+            ) : (
+              <>
+                <NavBar setSearchTerm={setSearchTerm} />
+                <Box>
+                  <ResetPasswordWrapper />
+                </Box>
+              </>
+            )
+          }
         />
         <Route path="*" element={<Navigate to="/blog" />} />
       </Routes>

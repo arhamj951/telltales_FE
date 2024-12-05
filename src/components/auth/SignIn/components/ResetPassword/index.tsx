@@ -63,7 +63,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token }) => {
   };
 
   return (
-    <Dialog open={true}>
+    <Dialog open={true} sx={{ zIndex: 1200 }}>
       <DialogTitle>Reset Password</DialogTitle>
       <DialogContent>
         <form onSubmit={handleResetPassword}>
