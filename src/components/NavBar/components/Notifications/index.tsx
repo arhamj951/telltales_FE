@@ -14,10 +14,8 @@ export default function Notifications({
 }: NotificationsProps) {
   const handleItemClick = async (alertId: string) => {
     try {
-      // API request to mark the notification as read
       await apiRequest("post", `/alerts/updatealert/${alertId}`, {});
 
-      // Update state with the new 'read' status
       setAlerts((prevAlerts) =>
         prevAlerts.map((alert) =>
           alert._id === alertId ? { ...alert, read: true } : alert

@@ -23,16 +23,7 @@ import { useUser } from "../../../../../context/UserContext";
 import axios from "axios";
 import { apiRequest } from "../../../../../../services/apiClient";
 import { TitleTypography } from "./styledComponents";
-
-function Reactions() {
-  return (
-    <Box sx={{ display: "flex", gap: 2, alignItems: "center", pt: 1 }}>
-      <IconButton>
-        <ThumbUp sx={{ fontSize: 20, color: "text.secondary" }} />
-      </IconButton>
-    </Box>
-  );
-}
+import CurrentDate from "./components/CurrentDate";
 
 const demoTags = [
   "Technology",
@@ -78,7 +69,7 @@ function Author({ authors }: { authors: { name: string; avatar: string }[] }) {
         </Typography>
       </Box>
       <Typography variant="caption" sx={{ color: "text.secondary" }}>
-        July 14, 2021
+        <CurrentDate />
       </Typography>
     </Box>
   );
@@ -183,15 +174,10 @@ export default function Post({
           tabIndex={0}
         >
           {article.title}
-          <NavigateNextRoundedIcon
-            className="arrow"
-            sx={{ fontSize: "1rem", color: "primary.main" }}
-          />
         </TitleTypography>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           {article.description}
         </Typography>
-        <Reactions />
         <Author authors={article.authors} />
         {ifMyPosts && (
           <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 2 }}>
